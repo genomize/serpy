@@ -245,7 +245,7 @@ class TestSerializer(unittest.TestCase):
         o = Obj(a=None)
 
         with self.assertRaises(TypeError) as c:
-            _ = ASerializer(o).data
+            ASerializer(o).data
 
         self.assertIn("// Error at ASerializer.a", c.exception.args[0])
 
