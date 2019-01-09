@@ -249,6 +249,30 @@ class TestSerializer(unittest.TestCase):
 
         self.assertIn("// Error at ASerializer.a", c.exception.args[0])
 
+    def test_optional_methodfield(self):
+        class ASerializer(Serializer):
+            a = MethodField(required=True)
+
+            def get_a(self, obj):
+                raise AttributeError("This field is ignored")
+
+        class BSerializer(Serializer):
+            a = MethodField(required=False)
+
+            def get_a(self, obj):
+                raise AttributeError("This field is ignored")
+
+        o = Obj()
+
+        with self.assertRaises(AttributeError) as c:
+            ASerializer(o).data
+
+        self.assertIn("This field is ignored", c.exception.args)
+
+        output = BSerializer(o).data
+
+        self.assertEqual(output, {})
+
     def test_error_on_data(self):
         with self.assertRaises(RuntimeError):
             Serializer(data='foo')
