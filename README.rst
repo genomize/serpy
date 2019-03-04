@@ -1,3 +1,7 @@
+This is a fork of the package Serpy authored by Clark Duvall maintained by Genomize.
+
+----
+
 *********************************************
 serpy: ridiculously fast object serialization
 *********************************************

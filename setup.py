@@ -9,12 +9,14 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='serpy',
-    version='0.3.1',
+    version='0.3.1+genomize.1',
     description='ridiculously fast object serialization',
     long_description=long_description,
-    url='https://github.com/clarkduvall/serpy',
+    url='https://github.com/genomize/serpy-genomize',
     author='Clark DuVall',
     author_email='clark.duvall@gmail.com',
+    maintainer="Genomize",
+    maintainer_email="info@genomize.com",
     license='MIT',
     install_requires=['six'],
     test_suite='tests',
