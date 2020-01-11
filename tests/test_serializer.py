@@ -238,6 +238,17 @@ class TestSerializer(unittest.TestCase):
         data = ASerializer(o).data
         self.assertIsNone(data['a'])
 
+    def test_extra_error_info(self):
+        class ASerializer(Serializer):
+            a = IntField()
+
+        o = Obj(a=None)
+
+        with self.assertRaises(TypeError) as c:
+            ASerializer(o).data
+
+        self.assertIn("# Error at ASerializer.a", c.exception.args[0])
+
     def test_error_on_data(self):
         with self.assertRaises(RuntimeError):
             Serializer(data='foo')

@@ -119,7 +119,16 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
                     if call:
                         result = result()
                     if to_value:
-                        result = to_value(result)
+                        try:
+                            result = to_value(result)
+                        except Exception as e:
+                            extra = " # Error at {}.{}".format(
+                                    self.__class__.__name__, name)
+                            args = list(e.args)
+                            args[0] = str(args[0]) + extra
+                            e.args = tuple(args)
+                            raise
+
             v[name] = result
 
         return v
