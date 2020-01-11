@@ -105,29 +105,35 @@ class Serializer(six.with_metaclass(SerializerMeta, SerializerBase)):
     def _serialize(self, instance, fields):
         v = {}
         for name, getter, to_value, call, required, pass_self in fields:
-            if pass_self:
-                result = getter(self, instance)
-            else:
-                try:
-                    result = getter(instance)
-                except (KeyError, AttributeError):
-                    if required:
-                        raise
-                    else:
-                        continue
-                if required or result is not None:
-                    if call:
-                        result = result()
-                    if to_value:
-                        try:
-                            result = to_value(result)
-                        except Exception as e:
-                            extra = " # Error at {}.{}".format(
-                                    self.__class__.__name__, name)
-                            args = list(e.args)
-                            args[0] = str(args[0]) + extra
-                            e.args = tuple(args)
+            try:
+                if pass_self:
+                    try:
+                        result = getter(self, instance)
+                    except (KeyError, AttributeError):
+                        if required:
                             raise
+                        else:
+                            continue
+                else:
+                    try:
+                        result = getter(instance)
+                    except (KeyError, AttributeError):
+                        if required:
+                            raise
+                        else:
+                            continue
+                if required or result is not None:
+                        if call:
+                            result = result()
+                        if to_value:
+                            result = to_value(result)
+            except Exception as e:
+                extra = " # Error at {}.{}".format(
+                        self.__class__.__name__, name)
+                args = list(e.args)
+                args[0] = str(args[0]) + extra
+                e.args = tuple(args)
+                raise
 
             v[name] = result
 

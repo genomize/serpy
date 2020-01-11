@@ -238,6 +238,29 @@ class TestSerializer(unittest.TestCase):
         data = ASerializer(o).data
         self.assertIsNone(data['a'])
 
+        o = Obj()
+
+        class ASerializer(Serializer):
+            a = MethodField(required=True)
+
+            def get_a(self, obj):
+                raise AttributeError("This field is ignored")
+
+        with self.assertRaises(AttributeError) as c:
+            ASerializer(o).data
+
+        self.assertIn("This field is ignored", c.exception.args[0])
+
+        class ASerializer(Serializer):
+            a = MethodField(required=False)
+
+            def get_a(self, obj):
+                raise AttributeError("This field is ignored")
+
+        output = ASerializer(o).data
+
+        self.assertEqual(output, {})
+
     def test_extra_error_info(self):
         class ASerializer(Serializer):
             a = IntField()
@@ -245,6 +268,19 @@ class TestSerializer(unittest.TestCase):
         o = Obj(a=None)
 
         with self.assertRaises(TypeError) as c:
+            ASerializer(o).data
+
+        self.assertIn("# Error at ASerializer.a", c.exception.args[0])
+
+        class ASerializer(Serializer):
+            a = MethodField(required=True)
+
+            def get_a(self, obj):
+                raise AttributeError("This field is ignored")
+
+        o = Obj(a=None)
+
+        with self.assertRaises(AttributeError) as c:
             ASerializer(o).data
 
         self.assertIn("# Error at ASerializer.a", c.exception.args[0])
